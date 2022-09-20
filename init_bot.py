@@ -22,7 +22,7 @@ async def get_user_goal(message: types.Message):
     await message.answer(text=USER_GOAL_MSG)
 
 
-@dp.message_handler(Text('Пример'))
+@dp.message_handler(Text('Название цели'))
 async def get_user_time(message: types.Message):
     await message.answer(text=DAY_0_MSG_2)
 
