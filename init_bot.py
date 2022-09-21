@@ -3,8 +3,11 @@ import os
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.dispatcher.filters import Text, Regexp
+from dotenv import load_dotenv
 
 from bot_messages import DAY_0_MSG_1, DAY_0_MSG_2, USER_GOAL_MSG
+
+load_dotenv()
 
 bot = Bot(token=os.getenv('API_TOKEN'))
 dp = Dispatcher(bot)
