@@ -14,8 +14,8 @@ from .const import DAY_0_INTRO_MSG, DAY_0_MSG_1, DAY_0_MSG_2, USER_GOAL_MSG_1, U
 from .const import DAY_1_INTRO_MSG, DAY_1_MSG_1, USER_HABBIT_MSG_1, USER_HABBIT_MSG_2, USER_HABBIT_MSG_3, DAY_1_MSG_2
 from .const import DAY_2_INTRO_MSG, DAY_2_MSG_1, USER_ATTITUDE_MSG_1, USER_ATTITUDE_MSG_2, DAY_2_MSG_2
 from .const import DAY_3_INTRO_MSG, DAY_3_MSG_1, USER_CHARACTERISTIC_1, USER_CHARACTERISTIC_2, DAY_3_MSG_2
-from .const import DAY_4_MSG_1, DAY_4_MSG_2, DAY_4_MSG_3, DAY_4_MSG_4, DAY_4_MSG_5
-from .const import DAY_5_MSG_1, DAY_5_MSG_2, DAY_5_MSG_3, DAY_5_MSG_4
+from .const import DAY_4_INTRO_MSG, DAY_4_MSG_1, DAY_4_MSG_2, DAY_4_MSG_3, DAY_4_MSG_4, DAY_4_MSG_5
+from .const import DAY_5_INTRO_MSG, DAY_5_MSG_1, DAY_5_MSG_2, DAY_5_MSG_3, DAY_5_MSG_4
 
 load_dotenv()
 
@@ -50,11 +50,11 @@ async def intro_message(message: types.Message):
             "Характеристики": [],
             "Chat_id": "",
             "Время отправки сообщений": "",
-            "Текущий день": ""
+            "Текущий пробный день": ""
         }
         json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_0_INTRO_MSG)
-    time.sleep(2)
+    time.sleep(1)
     await message.answer(text=DAY_0_MSG_1, reply_markup=keyboard)
 
 
@@ -107,7 +107,7 @@ async def zeroday_last_message(message: types.Message, state: FSMContext):
         user_preferences[user_id]['Зачем цель'] = data['Зачем цель']
     user_preferences[user_id]['Chat_id'] = chat_id
     user_preferences[user_id]['Время отправки сообщений'] = message.text
-    user_preferences[user_id]['Текущий день'] = '0'
+    user_preferences[user_id]['Текущий пробный день'] = '0'
     json.dump(user_preferences, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     keyboard = types.ReplyKeyboardMarkup(keyboard=[
         [types.KeyboardButton(text='Начать первый день')]
@@ -132,8 +132,12 @@ class FSMStateHabbit(StatesGroup):
 async def first_day_intro(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(types.KeyboardButton(text='Отправить привычку'))
+    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_id = str(message.from_user.id)
+    user_data[user_id]['Текущий пробный день'] = '1'
+    json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_1_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
-    time.sleep(2)
+    time.sleep(1)
     await message.answer(text=DAY_1_MSG_1, reply_markup=keyboard)
 
 
@@ -214,8 +218,12 @@ async def second_day_intro(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(keyboard=[
         [types.KeyboardButton(text='Отправить установку')]
     ], resize_keyboard=True)
+    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_id = str(message.from_user.id)
+    user_data[user_id]['Текущий пробный день'] = '2'
+    json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_2_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
-    time.sleep(2)
+    time.sleep(1)
     await message.answer(text=DAY_2_MSG_1, reply_markup=keyboard)
 
 
@@ -274,15 +282,18 @@ async def third_day_intro(message: types.Message):
     user_id = str(message.from_user.id)
     user_goal = user_data[user_id]['Цель']
     goal_reason = user_data[user_id]['Зачем цель']
+
+    user_data[user_id]['Текущий пробный день'] = '3'
+    json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_3_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
-    time.sleep(2)
+    time.sleep(1)
     await message.answer(text=DAY_3_MSG_1.format(user_goal=user_goal, goal_reason=goal_reason), reply_markup=keyboard)
 
 
 @dp.message_handler(Text('Отправить характеристику'), state=None)
 async def get_user_characteristic_name(message: types.Message):
     await FSMStateCharacteristic.state_first_message.set()
-    await message.answer(text=USER_CHARACTERISTIC_1)
+    await message.answer(text=USER_CHARACTERISTIC_1, reply_markup=types.ReplyKeyboardRemove())
 
 
 @dp.message_handler(state=FSMStateCharacteristic.state_first_message)
@@ -330,7 +341,9 @@ characteristic_callback_data = CallbackData('characteristic', 'name', 'action')
 @dp.message_handler(Text('Начать четвертый день'), state=None)
 async def day_fourth_intro(message: types.Message):
     await FSMFourthDay.state_first_message.set()
-    await message.answer(text=DAY_4_MSG_1, reply_markup=types.ReplyKeyboardRemove())
+    await message.answer(text=DAY_4_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
+    time.sleep(1)
+    await message.answer(text=DAY_4_MSG_1)
     inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text='Мистер', callback_data=characteristic_callback_data.new('Мистер', 'choose'))],
         [types.InlineKeyboardButton(text='Молодой человек', callback_data=characteristic_callback_data.new('Молодой человек', 'choose'))],
@@ -339,6 +352,10 @@ async def day_fourth_intro(message: types.Message):
         [types.InlineKeyboardButton(text='Миссис', callback_data=characteristic_callback_data.new('Миссис', 'choose'))],
         [types.InlineKeyboardButton(text='Мадам', callback_data=characteristic_callback_data.new('Мадам', 'choose'))]
     ], row_width=1)
+    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_id = str(message.from_user.id)
+    user_data[user_id]['Текущий пробный день'] = '4'
+    json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_4_MSG_2, reply_markup=inline_message)
 
 
@@ -353,7 +370,7 @@ async def get_new_user_characteristic(query: types.CallbackQuery):
     json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await query.answer(text=DAY_4_MSG_3.format(main_characteristic=main_characteristic), show_alert=True)
     await bot.send_message(chat_id=chat_id, text='(тут запускается алгоритм подбора характеристик')
-    time.sleep(2)
+    time.sleep(1)
     keyboard = types.ReplyKeyboardMarkup(keyboard=[
         [types.KeyboardButton(text='Да')]
     ], resize_keyboard= True)
@@ -385,6 +402,8 @@ class FSMFiveDay(StatesGroup):
 @dp.message_handler(Text('Начать пятый день'), state=None)
 async def day_fife_intro(message: types.Message):
     await FSMFiveDay.state_first_message.set()
+    await message.answer(text=DAY_5_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
+    time.sleep(1)
     keyboard = types.ReplyKeyboardMarkup(keyboard=[
         [types.KeyboardButton(text='Финансовую')],
         [types.KeyboardButton(text='Уверенность')],
@@ -393,6 +412,9 @@ async def day_fife_intro(message: types.Message):
     user_data = json.load(open('config/user_preferences.json', 'r'))
     user_id = str(message.from_user.id)
     main_characteristic = user_data[user_id]['Обращение']
+
+    user_data[user_id]['Текущий пробный день'] = '5'
+    json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_5_MSG_1.format(main_characteristic=main_characteristic), reply_markup=keyboard)
 
 
@@ -405,7 +427,7 @@ async def get_user_sphere(message: types.Message):
         [types.KeyboardButton(text='Да')],
         [types.KeyboardButton(text='Нет')]
     ], resize_keyboard=True)
-    time.sleep(2)
+    time.sleep(1)
     await message.answer(text=DAY_5_MSG_3, reply_markup=keyboard)
 
 
