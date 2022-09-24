@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 aiogram = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
