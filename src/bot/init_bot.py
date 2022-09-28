@@ -36,7 +36,7 @@ class FSMStateGoal(StatesGroup):
 async def intro_message(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(types.KeyboardButton(text='Определить цель'))
-    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
     user_id = str(message.from_user.id)
     if user_id not in user_data.keys():
         user_data[user_id] = {
@@ -52,7 +52,7 @@ async def intro_message(message: types.Message):
             "Время отправки сообщений": "",
             "Текущий пробный день": ""
         }
-        json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+        json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_0_INTRO_MSG)
     time.sleep(1)
     await message.answer(text=DAY_0_MSG_1, reply_markup=keyboard)
@@ -97,7 +97,7 @@ async def get_user_goal_reason(message: types.Message, state: FSMContext):
 async def zeroday_last_message(message: types.Message, state: FSMContext):
     user_id = str(message.from_user.id)
     chat_id = message.chat.id
-    user_preferences = json.load(open('config/user_preferences.json', 'r'))
+    user_preferences = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
     # user_data = user_preferences.get(user_id)
     if str(user_id) not in user_preferences.keys():
         user_preferences[user_id] = {}
@@ -108,7 +108,7 @@ async def zeroday_last_message(message: types.Message, state: FSMContext):
     user_preferences[user_id]['Chat_id'] = chat_id
     user_preferences[user_id]['Время отправки сообщений'] = message.text
     user_preferences[user_id]['Текущий пробный день'] = '0'
-    json.dump(user_preferences, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+    json.dump(user_preferences, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     keyboard = types.ReplyKeyboardMarkup(keyboard=[
         [types.KeyboardButton(text='Начать первый день')]
     ], resize_keyboard=True)
@@ -132,10 +132,10 @@ class FSMStateHabbit(StatesGroup):
 async def first_day_intro(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(types.KeyboardButton(text='Отправить привычку'))
-    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
     user_id = str(message.from_user.id)
     user_data[user_id]['Текущий пробный день'] = '1'
-    json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+    json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_1_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
     time.sleep(1)
     await message.answer(text=DAY_1_MSG_1, reply_markup=keyboard)
@@ -174,7 +174,7 @@ async def first_day_last_message(message: types.Message, state: FSMContext):
         [types.KeyboardButton(text='Изменить цель')],
         [types.KeyboardButton(text='Начать второй день')]
     ])
-    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
     user_id = str(message.from_user.id)
     user_goal = user_data[user_id]['Цель']
     goal_date = user_data[user_id]['Срок цели']
@@ -186,7 +186,7 @@ async def first_day_last_message(message: types.Message, state: FSMContext):
             'Полезна?': message.text
         }
         user_data[user_id]['Привычки'].append(new_habit)
-        json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+        json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_1_MSG_2.format(user_goal=user_goal, goal_date=goal_date, goal_reason=goal_reason),
                          reply_markup=keyboard)
     await state.finish()
@@ -218,10 +218,10 @@ async def second_day_intro(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(keyboard=[
         [types.KeyboardButton(text='Отправить установку')]
     ], resize_keyboard=True)
-    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
     user_id = str(message.from_user.id)
     user_data[user_id]['Текущий пробный день'] = '2'
-    json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+    json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_2_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
     time.sleep(1)
     await message.answer(text=DAY_2_MSG_1, reply_markup=keyboard)
@@ -250,7 +250,7 @@ async def second_day_last_message(message: types.Message, state: FSMContext):
     keyboard = types.ReplyKeyboardMarkup(keyboard=[
         [types.KeyboardButton(text='Начать третий день')]
     ], resize_keyboard=True)
-    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
     user_id = str(message.from_user.id)
     async with state.proxy() as data:
         new_attitude = {
@@ -258,7 +258,7 @@ async def second_day_last_message(message: types.Message, state: FSMContext):
             'Полезна?': message.text
         }
         user_data[user_id]['Установки'].append(new_attitude)
-        json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+        json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_2_MSG_2, reply_markup=keyboard)
     await state.finish()
 
@@ -278,13 +278,13 @@ async def third_day_intro(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(keyboard=[
         [types.KeyboardButton(text='Отправить характеристику')]
     ], resize_keyboard=True)
-    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
     user_id = str(message.from_user.id)
     user_goal = user_data[user_id]['Цель']
     goal_reason = user_data[user_id]['Зачем цель']
 
     user_data[user_id]['Текущий пробный день'] = '3'
-    json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+    json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_3_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
     time.sleep(1)
     await message.answer(text=DAY_3_MSG_1.format(user_goal=user_goal, goal_reason=goal_reason), reply_markup=keyboard)
@@ -313,7 +313,7 @@ async def third_day_last_message(message: types.Message, state: FSMContext):
     keyboard = types.ReplyKeyboardMarkup(keyboard=[
         [types.KeyboardButton(text='Начать четвертый день')]
     ], resize_keyboard=True)
-    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
     user_id = str(message.from_user.id)
     async with state.proxy() as data:
         new_characteristic = {
@@ -321,7 +321,7 @@ async def third_day_last_message(message: types.Message, state: FSMContext):
             'Позитивная?': message.text
         }
         user_data[user_id]['Характеристики'].append(new_characteristic)
-        json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+        json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_3_MSG_2, reply_markup=keyboard)
     await state.finish()
 
@@ -352,22 +352,22 @@ async def day_fourth_intro(message: types.Message):
         [types.InlineKeyboardButton(text='Миссис', callback_data=characteristic_callback_data.new('Миссис', 'choose'))],
         [types.InlineKeyboardButton(text='Мадам', callback_data=characteristic_callback_data.new('Мадам', 'choose'))]
     ], row_width=1)
-    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
     user_id = str(message.from_user.id)
     user_data[user_id]['Текущий пробный день'] = '4'
-    json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+    json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_4_MSG_2, reply_markup=inline_message)
 
 
 @dp.callback_query_handler(characteristic_callback_data.filter(action='choose'), state=FSMFourthDay.state_first_message)
 async def get_new_user_characteristic(query: types.CallbackQuery):
     await FSMFourthDay.state_second_message.set()
-    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
     user_id = str(query.from_user.id)
     chat_id = str(query.message.chat.id)
     main_characteristic = query.data.split(':')[1]
     user_data[user_id]['Обращение'] = main_characteristic
-    json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+    json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await query.answer(text=DAY_4_MSG_3.format(main_characteristic=main_characteristic), show_alert=True)
     await bot.send_message(chat_id=chat_id, text='(тут запускается алгоритм подбора характеристик')
     time.sleep(1)
@@ -409,12 +409,12 @@ async def day_fife_intro(message: types.Message):
         [types.KeyboardButton(text='Уверенность')],
         [types.KeyboardButton(text='Здоровье')]
     ], resize_keyboard=True)
-    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
     user_id = str(message.from_user.id)
     main_characteristic = user_data[user_id]['Обращение']
 
     user_data[user_id]['Текущий пробный день'] = '5'
-    json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+    json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_5_MSG_1.format(main_characteristic=main_characteristic), reply_markup=keyboard)
 
 
@@ -438,10 +438,10 @@ async def get_user_reminder(message: types.Message, state: FSMContext):
         [types.KeyboardButton(text='Отправить установку')],
         [types.KeyboardButton(text='Отправить привычку')]
     ], resize_keyboard=True)
-    user_data = json.load(open('config/user_preferences.json', 'r'))
+    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
     user_id = str(message.from_user.id)
     user_data[user_id]['Напоминать об установках'] = message.text
-    json.dump(user_data, open('config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+    json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_5_MSG_4, reply_markup=keyboard)
     await state.finish()
 
