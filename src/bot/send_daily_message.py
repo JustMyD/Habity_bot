@@ -15,11 +15,11 @@ def check_current_timeinterval() -> str:
     """
     current_day_time = datetime.now().strftime('%H')
     timeinterval = ''
-    if 7 < int(current_day_time) < 10:
+    if 6 < int(current_day_time) < 8:
         timeinterval = 'Утром'
-    elif 15 < int(current_day_time) < 17:
+    elif 12 < int(current_day_time) < 14:
         timeinterval = 'Днем'
-    elif 17 < int(current_day_time) < 20:
+    elif 18 < int(current_day_time) < 20:
         timeinterval = 'Вечером'
     # elif 20 < int(current_day_time) < 22:
     #     timeinterval = 'Ночь'
