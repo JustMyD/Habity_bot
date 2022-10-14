@@ -1,4 +1,4 @@
-from ...init_bot import dp, INIT_DAY_FUNCTIONS
+from ...init_bot import bot, INIT_DAY_FUNCTIONS
 from ...const.msgs import DAY_0_INTRO_MSG, DAY_0_MSG_1, DAY_0_MSG_2, USER_GOAL_MSG_1, USER_GOAL_MSG_2, USER_GOAL_MSG_3, DAY_0_MSG_3
 
 import json
@@ -17,7 +17,6 @@ class FSMStateGoal(StatesGroup):
     state_fourth_message = State()
 
 
-# @dp.message_handler(commands='start')
 async def intro_message(message: Union[types.Message, str]):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(types.KeyboardButton(text='Определить цель'))
@@ -49,13 +48,11 @@ async def intro_message(message: Union[types.Message, str]):
         await bot.send_message(chat_id=user_id, text=DAY_0_MSG_1, reply_markup=keyboard)
 
 
-# @dp.message_handler(Text('Определить цель'), state=None)
 async def start_get_user_goal(message: types.Message):
     await FSMStateGoal.state_first_message.set()
     await message.answer(text=USER_GOAL_MSG_1, reply_markup=types.ReplyKeyboardRemove())
 
 
-# @dp.message_handler(state=FSMStateGoal.state_third_message)
 async def get_user_goal_reason(message: types.Message, state: FSMContext):
     await FSMStateGoal.state_fourth_message.set()
     keyboard = types.ReplyKeyboardMarkup(keyboard=[
@@ -68,10 +65,8 @@ async def get_user_goal_reason(message: types.Message, state: FSMContext):
     await message.answer(text=DAY_0_MSG_2, reply_markup=keyboard)
 
 
-# @dp.message_handler(Text(['Утром', 'Днем', 'Вечером']), state=FSMStateGoal.state_fourth_message)
 async def zeroday_last_message(message: types.Message, state: FSMContext):
     user_id = str(message.from_user.id)
-    chat_id = message.chat.id
     user_preferences = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
     if str(user_id) not in user_preferences.keys():
         user_preferences[user_id] = {}
@@ -92,5 +87,6 @@ def register_handlers_zero_day(dp: Dispatcher):
     dp.register_message_handler(start_get_user_goal, Text('Определить цель'), state=None)
     dp.register_message_handler(get_user_goal_reason, state=FSMStateGoal.state_third_message)
     dp.register_message_handler(zeroday_last_message, Text(['Утром', 'Днем', 'Вечером']),  state=FSMStateGoal.state_fourth_message)
+
 
 INIT_DAY_FUNCTIONS.update({'0': intro_message})
