@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 
 from aiogram import Dispatcher, types
 from aiogram.dispatcher.filters import Text
@@ -8,6 +9,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from src.bot.init_bot import bot
+
+preferences_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../../../config/user_preferences.json'))
 
 arrow_callback_data = CallbackData('arrow', 'type', 'direction', 'next')
 control_callback_data = CallbackData('control', 'type', 'action', 'btn_num')
@@ -49,7 +52,7 @@ class FSMStateAddAttitude(StatesGroup):
 
 async def show_user_attitude(message: types.Message):
     user_id = str(message.from_user.id)
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_attitudes = users_data[user_id]['Установки']
     current_attitude = 0
     inline_message = types.InlineKeyboardMarkup(row_width=1)
@@ -76,7 +79,7 @@ async def show_user_attitude(message: types.Message):
 
 async def show_previous_user_attitude(query: types.CallbackQuery):
     user_id = str(query.from_user.id)
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_attitudes = users_data[user_id]['Установки']
     current_attitude = int(query.data.split(':')[3])
     inline_message = types.InlineKeyboardMarkup(row_width=1)
@@ -109,7 +112,7 @@ async def show_previous_user_attitude(query: types.CallbackQuery):
 
 async def show_next_user_attitude(query: types.CallbackQuery):
     user_id = str(query.from_user.id)
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_attitudes = users_data[user_id]['Установки']
     current_attitude = int(query.data.split(':')[3])
     last_attitude = len(user_attitudes) - 1
@@ -152,11 +155,11 @@ async def show_empty_user_attitudes(query: types.CallbackQuery):
 
 async def remove_user_attitude(query: types.CallbackQuery):
     user_id = str(query.from_user.id)
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_attitudes = users_data[user_id]['Установки']
     current_attitude = int(query.data.split(':')[3])
     user_attitudes.pop(current_attitude)
-    json.dump(users_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'),
+    json.dump(users_data, open(preferences_path, 'w'),
               ensure_ascii=False, indent=3)
     current_attitude = 0
     inline_message = types.InlineKeyboardMarkup()
@@ -222,7 +225,7 @@ async def add_new_user_attitude_reminder(message: types.Message, state: FSMConte
 
 
 async def save_new_user_attitude(message: types.Message, state=FSMContext):
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_id = str(message.from_user.id)
     chat_id = message.chat.id
     async with state.proxy() as data:
@@ -232,7 +235,7 @@ async def save_new_user_attitude(message: types.Message, state=FSMContext):
             'Напоминать': message.text
         }
         users_data[user_id]['Установки'].append(new_attitude)
-        json.dump(users_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'),
+        json.dump(users_data, open(preferences_path, 'w'),
                   ensure_ascii=False, indent=3)
 
     user_attitudes = users_data[user_id]['Установки']

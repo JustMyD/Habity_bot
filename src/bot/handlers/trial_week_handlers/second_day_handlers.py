@@ -2,11 +2,14 @@ from ...init_bot import bot, INIT_DAY_FUNCTIONS
 from ...const.msgs import DAY_2_INTRO_MSG, DAY_2_MSG_1, USER_ATTITUDE_MSG_1, USER_ATTITUDE_MSG_2, DAY_2_MSG_2
 
 import json
+import os
 
 from aiogram import Dispatcher, types
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
+
+preferences_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../../../config/user_preferences.json'))
 
 
 class FSMStateAttitude(StatesGroup):
@@ -19,9 +22,9 @@ async def second_day_intro(user_id: str):
     keyboard = types.ReplyKeyboardMarkup(keyboard=[
         [types.KeyboardButton(text='Отправить установку')]
     ], resize_keyboard=True)
-    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    user_data = json.load(open(preferences_path, 'r'))
     user_data[user_id]['Был оповещен сегодня'] = 'Да'
-    json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+    json.dump(user_data, open(preferences_path, 'w'), ensure_ascii=False, indent=3)
     await bot.send_message(chat_id=user_id, text=DAY_2_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
     await bot.send_message(chat_id=user_id, text=DAY_2_MSG_1, reply_markup=keyboard)
 
@@ -57,7 +60,7 @@ async def get_user_attitude_reminder(message: types.Message, state: FSMContext):
 
 
 async def second_day_last_message(message: types.Message, state: FSMContext):
-    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    user_data = json.load(open(preferences_path, 'r'))
     user_id = str(message.from_user.id)
     async with state.proxy() as data:
         new_attitude = {
@@ -67,7 +70,7 @@ async def second_day_last_message(message: types.Message, state: FSMContext):
         }
         user_data[user_id]['Установки'].append(new_attitude)
         user_data[user_id]['Текущий пробный день'] = '3'
-        json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+        json.dump(user_data, open(preferences_path, 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_2_MSG_2, reply_markup=types.ReplyKeyboardRemove())
     await state.finish()
 

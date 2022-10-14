@@ -3,12 +3,15 @@ from ...const.msgs import DAY_4_INTRO_MSG, DAY_4_MSG_1, DAY_4_MSG_2, DAY_4_MSG_3
 
 import json
 import time
+import os
 
 from aiogram import Dispatcher, types
 from aiogram.utils.callback_data import CallbackData
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
+
+preferences_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../../../config/user_preferences.json'))
 
 characteristic_callback_data = CallbackData('characteristic', 'name', 'action')
 
@@ -29,22 +32,22 @@ async def fourth_day_intro(user_id: str):
         [types.InlineKeyboardButton(text='Миссис', callback_data=characteristic_callback_data.new('Миссис', 'choose'))],
         [types.InlineKeyboardButton(text='Мадам', callback_data=characteristic_callback_data.new('Мадам', 'choose'))]
     ], row_width=1)
-    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    user_data = json.load(open(preferences_path, 'r'))
     user_data[user_id]['Был оповещен сегодня'] = 'Да'
-    json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'),
+    json.dump(user_data, open(preferences_path, 'w'),
               ensure_ascii=False, indent=3)
     await bot.send_message(chat_id=user_id, text=DAY_4_MSG_2, reply_markup=inline_message)
 
 
 async def get_new_user_characteristic(query: types.CallbackQuery):
     await FSMFourthDay.state_first_message.set()
-    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    user_data = json.load(open(preferences_path, 'r'))
     user_id = str(query.from_user.id)
     chat_id = str(query.message.chat.id)
     main_characteristic = query.data.split(':')[1]
     user_data[user_id]['Обращение'] = main_characteristic
     user_data[user_id]['Текущий пробный день'] = '5'
-    json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'),
+    json.dump(user_data, open(preferences_path, 'w'),
               ensure_ascii=False, indent=3)
     await query.answer(text=DAY_4_MSG_3.format(main_characteristic=main_characteristic), show_alert=True)
     await bot.send_message(chat_id=chat_id, text='(тут запускается алгоритм подбора характеристик')

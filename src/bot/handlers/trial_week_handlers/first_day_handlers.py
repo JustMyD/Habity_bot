@@ -2,11 +2,14 @@ from ...init_bot import bot, INIT_DAY_FUNCTIONS
 from ...const.msgs import DAY_1_INTRO_MSG, DAY_1_MSG_1, USER_HABBIT_MSG_1, USER_HABBIT_MSG_2, USER_HABBIT_MSG_3, DAY_1_MSG_2
 
 import json
+import os
 
 from aiogram import Dispatcher, types
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
+
+preferences_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../../../config/user_preferences.json'))
 
 
 class FSMStateTrialHabbit(StatesGroup):
@@ -18,9 +21,9 @@ class FSMStateTrialHabbit(StatesGroup):
 async def first_day_intro(user_id: str):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(types.KeyboardButton(text='Отправить привычку'))
-    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    user_data = json.load(open(preferences_path, 'r'))
     user_data[user_id]['Был оповещен сегодня'] = 'Да'
-    json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+    json.dump(user_data, open(preferences_path, 'w'), ensure_ascii=False, indent=3)
     await bot.send_message(chat_id=user_id, text=DAY_1_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
     await bot.send_message(chat_id=user_id, text=DAY_1_MSG_1, reply_markup=keyboard)
 
@@ -53,7 +56,7 @@ async def first_day_last_message(message: types.Message, state: FSMContext):
         [types.KeyboardButton(text='Отправить привычку')],
         [types.KeyboardButton(text='Изменить цель')]
     ])
-    user_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    user_data = json.load(open(preferences_path, 'r'))
     user_id = str(message.from_user.id)
     user_goal = user_data[user_id]['Цель']
     goal_date = user_data[user_id]['Срок цели']
@@ -66,7 +69,7 @@ async def first_day_last_message(message: types.Message, state: FSMContext):
         }
         user_data[user_id]['Привычки'].append(new_habit)
         user_data[user_id]['Текущий пробный день'] = '2'
-        json.dump(user_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'), ensure_ascii=False, indent=3)
+        json.dump(user_data, open(preferences_path, 'w'), ensure_ascii=False, indent=3)
     await message.answer(text=DAY_1_MSG_2.format(user_goal=user_goal, goal_date=goal_date, goal_reason=goal_reason),
                          reply_markup=keyboard)
     await state.finish()
