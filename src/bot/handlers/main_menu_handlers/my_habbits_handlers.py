@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 
 from aiogram import Dispatcher, types
 from aiogram.dispatcher.filters import Text
@@ -9,7 +10,9 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 # pagination_callback_data = CallbackData('pagination', 'page')
 from ...const.msgs import USER_HABBIT_MSG_1, USER_HABBIT_MSG_2, USER_HABBIT_MSG_3
-from src.bot.init_bot import bot
+from bot.init_bot import bot
+
+preferences_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../../../config/user_preferences.json'))
 
 habbit_number_data = CallbackData('habbit', 'menu', 'action', 'number')
 add_new_habbit_data = CallbackData('habbit', 'menu', 'action') # Нужно ли?
@@ -48,7 +51,7 @@ class FSMStateRemoveHabbit(StatesGroup):
 
 async def show_habbits_list(message: types.Message):
     user_id = str(message.from_user.id)
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_habbits = users_data[user_id]['Привычки']
     inline_message = types.InlineKeyboardMarkup(row_width=1)
     if user_habbits:
@@ -68,7 +71,7 @@ async def show_habbits_list(message: types.Message):
 
 async def show_user_habbit(query: types.CallbackQuery):
     user_id = str(query.from_user.id)
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_habbits = users_data[user_id]['Привычки']
     habbit_number = int(query.data.split(':')[3])
     habbit_name = user_habbits[habbit_number]['Название привычки']
@@ -122,7 +125,7 @@ async def add_new_user_habbit_value(message: types.Message, state: FSMContext):
 
 
 async def save_new_user_habbit(message: types.Message, state=FSMContext):
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_id = str(message.from_user.id)
     chat_id = message.chat.id
     async with state.proxy() as data:
@@ -132,7 +135,7 @@ async def save_new_user_habbit(message: types.Message, state=FSMContext):
             'Полезна?': message.text
         }
         users_data[user_id]['Привычки'].append(new_habit)
-        json.dump(users_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'),
+        json.dump(users_data, open(preferences_path, 'w'),
                   ensure_ascii=False, indent=3)
     user_habbits = users_data[user_id]['Привычки']
     inline_message = types.InlineKeyboardMarkup(row_width=1)
@@ -159,7 +162,7 @@ async def save_new_user_habbit(message: types.Message, state=FSMContext):
 async def remove_user_habbit(query: types.CallbackQuery):
     user_id = str(query.from_user.id)
     habbit_number = int(query.data.split(':')[3])
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     users_data[user_id]['Привычки'].pop(habbit_number)
     user_habbits = users_data[user_id]['Привычки']
     inline_message = types.InlineKeyboardMarkup(row_width=1)
@@ -175,7 +178,7 @@ async def remove_user_habbit(query: types.CallbackQuery):
         formatted_msg = EMPTY_HABBITS_MSG_TEMPLATE
     inline_message.add(types.InlineKeyboardButton(text='Добавить привычку',
                                                   callback_data=add_new_habbit_data.new(menu='habbit', action='add')))
-    json.dump(users_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'),
+    json.dump(users_data, open(preferences_path, 'w'),
               indent=3, ensure_ascii=False)
     await bot.edit_message_text(text=formatted_msg, chat_id=query.message.chat.id, message_id=query.message.message_id,
                                 reply_markup=inline_message, parse_mode='HTML')
@@ -183,7 +186,7 @@ async def remove_user_habbit(query: types.CallbackQuery):
 
 async def back_to_habbits_list(query: types.CallbackQuery):
     user_id = str(query.from_user.id)
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_habbits = users_data[user_id]['Привычки']
     inline_message = types.InlineKeyboardMarkup(row_width=1)
     for i, habbit in enumerate(user_habbits):

@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 
 from aiogram import Dispatcher, types
 from aiogram.dispatcher.filters import Text
@@ -8,7 +9,9 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from ...const.msgs import USER_CHARACTERISTIC_1, USER_CHARACTERISTIC_2
-from src.bot.init_bot import bot
+from bot.init_bot import bot
+
+preferences_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../../../config/user_preferences.json'))
 
 char_number_data = CallbackData('characteristic', 'menu', 'action', 'number')
 add_new_char_data = CallbackData('characteristic', 'menu', 'action')
@@ -39,7 +42,7 @@ class FSMStateAddCharacteristic(StatesGroup):
 
 async def show_characteristics_list(message: types.Message):
     user_id = str(message.from_user.id)
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_chars = users_data[user_id]['Характеристики']
     inline_message = types.InlineKeyboardMarkup(row_width=1)
     if user_chars:
@@ -59,7 +62,7 @@ async def show_characteristics_list(message: types.Message):
 
 async def show_user_characteristic(query: types.CallbackQuery):
     user_id = str(query.from_user.id)
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_chars = users_data[user_id]['Характеристики']
     char_number = int(query.data.split(':')[3])
     char_name = user_chars[char_number]['Название характеристики']
@@ -105,7 +108,7 @@ async def add_new_user_characteristic_value(message: types.Message, state: FSMCo
 
 
 async def save_new_user_characteristic(message: types.Message, state: FSMContext):
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_id = str(message.from_user.id)
     chat_id = message.chat.id
     async with state.proxy() as data:
@@ -114,7 +117,7 @@ async def save_new_user_characteristic(message: types.Message, state: FSMContext
             'Позитивная': message.text
         }
         users_data[user_id]['Характеристики'].append(new_char)
-    json.dump(users_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'),
+    json.dump(users_data, open(preferences_path, 'w'),
               ensure_ascii=False, indent=3)
     user_chars = users_data[user_id]['Характеристики']
     inline_message = types.InlineKeyboardMarkup(row_width=1)
@@ -140,12 +143,12 @@ async def save_new_user_characteristic(message: types.Message, state: FSMContext
 
 async def change_main_charactiristic(query: types.CallbackQuery):
     user_id = str(query.from_user.id)
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_chars = users_data[user_id]['Характеристики']
     new_main_char_num = int(query.data.split(':')[3])
     new_main_char = user_chars[new_main_char_num]['Название характеристики']
     users_data[user_id]['Обращение'] = new_main_char
-    json.dump(users_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'),
+    json.dump(users_data, open(preferences_path, 'w'),
               ensure_ascii=False, indent=3)
     await query.answer(text=f'Теперь я буду обращаться к вам {new_main_char}', cache_time=10)
 
@@ -153,7 +156,7 @@ async def change_main_charactiristic(query: types.CallbackQuery):
 async def remove_user_characteristic(query: types.CallbackQuery):
     user_id = str(query.from_user.id)
     char_number = int(query.data.split(':')[3])
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     users_data[user_id]['Характеристики'].pop(char_number)
     user_chars = users_data[user_id]['Характеристики']
     inline_message = types.InlineKeyboardMarkup(row_width=1)
@@ -169,7 +172,7 @@ async def remove_user_characteristic(query: types.CallbackQuery):
         formatted_msg = EMPTY_CHAR_MSG_TEMPLATE
     inline_message.add(types.InlineKeyboardButton(text='Добавить характеристику',
                                                   callback_data=add_new_char_data.new(menu='characteristic', action='add')))
-    json.dump(users_data, open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'w'),
+    json.dump(users_data, open(preferences_path, 'w'),
               indent=3, ensure_ascii=False)
     await bot.edit_message_text(text=formatted_msg, chat_id=query.message.chat.id, message_id=query.message.message_id,
                                 reply_markup=inline_message, parse_mode='HTML')
@@ -177,7 +180,7 @@ async def remove_user_characteristic(query: types.CallbackQuery):
 
 async def back_to_habbits_list(query: types.CallbackQuery):
     user_id = str(query.from_user.id)
-    users_data = json.load(open('/home/www/Bot_projects/Habity_bot/config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     user_chars = users_data[user_id]['Характеристики']
     inline_message = types.InlineKeyboardMarkup(row_width=1)
     for i, characteristic in enumerate(user_chars):
