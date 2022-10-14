@@ -10,7 +10,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 # pagination_callback_data = CallbackData('pagination', 'page')
 from ...const.msgs import USER_HABBIT_MSG_1, USER_HABBIT_MSG_2, USER_HABBIT_MSG_3
-from src.bot.init_bot import bot
+from bot.init_bot import bot
 
 preferences_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../../../config/user_preferences.json'))
 

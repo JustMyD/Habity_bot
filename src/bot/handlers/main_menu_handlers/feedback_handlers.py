@@ -1,5 +1,5 @@
-from src.bot.filters.custom_filters import NotCommand
-from src.bot.init_bot import bot
+from bot.filters.custom_filters import NotCommand
+from bot.init_bot import bot
 
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext

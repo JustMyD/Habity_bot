@@ -9,7 +9,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from ...const.msgs import USER_CHARACTERISTIC_1, USER_CHARACTERISTIC_2
-from src.bot.init_bot import bot
+from bot.init_bot import bot
 
 preferences_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../../../config/user_preferences.json'))
 
