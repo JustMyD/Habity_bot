@@ -36,7 +36,7 @@ def get_users_for_mailing(interval: str) -> list:
     Парсим конфиг для получения списка пользователей и текущего дня пользователя для рассылки сообщений
     :return:
     """
-    users_data = json.load(open('../config/user_preferences.json', 'r'))
+    users_data = json.load(open('config/user_preferences.json', 'r'))
     mailing_list = []
     for user, data in users_data.items():
         if data['Время отправки сообщений'] == interval and int(data['Текущий пробный день']) < 6 and data['Был оповещен сегодня'] == 'Нет' or int(data['Текущий пробный день']) == 0:
@@ -62,7 +62,7 @@ def send_messages(mailing_list: list):
     try:
         logging.info('Start running tasks')
         io_loop.run_until_complete(asyncio.wait(bot_tasks))
-        ligging.info('End running tasks')
+        logging.info('End running tasks')
     except Exception as e:
         logging.error(e)
     io_loop.close()

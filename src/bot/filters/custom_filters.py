@@ -4,7 +4,8 @@ from aiogram import types
 
 class NotCommand(BoundFilter):
     async def check(self, message: types.Message):
-        return '/' not in message.text
+        result = '/' not in message.text
+        return result
 
 
 #class NotPrivate(BoundFilter):
