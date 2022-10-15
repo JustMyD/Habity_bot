@@ -11,6 +11,7 @@ from .main_menu_handlers.my_habbits_handlers import register_my_habbits_handlers
 from .main_menu_handlers.my_characteristics import register_my_characteristics_handlers
 from .main_menu_handlers.my_attitudes import register_my_attitudes_handlers
 from .main_menu_handlers.feedback_handlers import register_feedback_handlers
+from .main_menu_handlers.my_goal import register_my_goal_handlers
 
 
 def setup_dispatcher_handlers(dp: Dispatcher):
@@ -25,3 +26,4 @@ def setup_dispatcher_handlers(dp: Dispatcher):
     register_my_habbits_handlers(dp)
     register_my_characteristics_handlers(dp)
     register_my_attitudes_handlers(dp)
+    register_my_goal_handlers(dp)

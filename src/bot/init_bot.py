@@ -3,15 +3,11 @@
 остаются основные колбэки
 """
 from .const.msgs import MAIN_MENU_MSG
-from .filters.custom_filters import NotCommand
 
 import json
 import os
-import time
-from typing import Union
 
 from aiogram import Bot, Dispatcher, types
-from aiogram.dispatcher.filters import Text
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 from dotenv import load_dotenv
@@ -39,21 +35,3 @@ async def show_main_menu(message: types.Message):
     main_characteristic = user_data[str(message.from_user.id)]['Обращение']
     main_characteristic = main_characteristic if main_characteristic else 'Друг'
     await message.answer(text=MAIN_MENU_MSG.format(characteristic=main_characteristic), reply_markup=keyboard)
-
-
-@dp.message_handler(Text('Моя цель'))
-async def show_user_goal(message: types.Message):
-    user_data = json.load(open(preferences_path, 'r'))
-    user_goal = user_data[str(message.from_user.id)]['Цель']
-    await message.answer(text=f'Ваша текущая цель:\n{user_goal}')
-
-
-# ToDo CallbackQuery для списка целей с возможностью изменения цели или ее удаления
-# @dp.message_handler(Text('Изменить цель'))
-# async def change_user_goal(query: types.CallbackQuery):
-#     pass
-#
-#
-# @dp.message_handler(Text('Удалить цель'))
-# async def delete_user_goal(query: types.CallbackQuery):
-#     pass
