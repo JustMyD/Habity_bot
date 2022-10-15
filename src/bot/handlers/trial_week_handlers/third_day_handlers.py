@@ -1,5 +1,6 @@
-from ...init_bot import bot, INIT_DAY_FUNCTIONS
-from ...const.msgs import DAY_3_INTRO_MSG, DAY_3_MSG_1, USER_CHARACTERISTIC_1, USER_CHARACTERISTIC_2, DAY_3_MSG_2
+from bot.init_bot import bot, INIT_DAY_FUNCTIONS
+from bot.const.msgs import DAY_3_INTRO_MSG, DAY_3_MSG_1, USER_CHARACTERISTIC_1, USER_CHARACTERISTIC_2, DAY_3_MSG_2
+from service.custom_methods import send_message
 
 import json
 import os
@@ -26,8 +27,8 @@ async def third_day_intro(user_id: str):
     goal_reason = user_data[user_id]['Зачем цель']
     user_data[user_id]['Был оповещен сегодня'] = 'Да'
     json.dump(user_data, open(preferences_path, 'w'), ensure_ascii=False, indent=3)
-    await bot.send_message(chat_id=user_id, text=DAY_3_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
-    await bot.send_message(chat_id=user_id, text=DAY_3_MSG_1.format(user_goal=user_goal, goal_reason=goal_reason), reply_markup=keyboard)
+    await send_message(chat_id=user_id, text=DAY_3_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
+    await send_message(chat_id=user_id, text=DAY_3_MSG_1.format(user_goal=user_goal, goal_reason=goal_reason), reply_markup=keyboard)
 
 
 async def get_user_characteristic_name(message: types.Message):

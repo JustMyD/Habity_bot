@@ -1,5 +1,6 @@
-from ...init_bot import bot, INIT_DAY_FUNCTIONS
-from ...const.msgs import DAY_2_INTRO_MSG, DAY_2_MSG_1, USER_ATTITUDE_MSG_1, USER_ATTITUDE_MSG_2, DAY_2_MSG_2
+from bot.init_bot import bot, INIT_DAY_FUNCTIONS
+from bot.const.msgs import DAY_2_INTRO_MSG, DAY_2_MSG_1, USER_ATTITUDE_MSG_1, USER_ATTITUDE_MSG_2, DAY_2_MSG_2
+from service.custom_methods import send_message
 
 import json
 import os
@@ -25,8 +26,8 @@ async def second_day_intro(user_id: str):
     user_data = json.load(open(preferences_path, 'r'))
     user_data[user_id]['Был оповещен сегодня'] = 'Да'
     json.dump(user_data, open(preferences_path, 'w'), ensure_ascii=False, indent=3)
-    await bot.send_message(chat_id=user_id, text=DAY_2_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
-    await bot.send_message(chat_id=user_id, text=DAY_2_MSG_1, reply_markup=keyboard)
+    await send_message(chat_id=user_id, text=DAY_2_INTRO_MSG, reply_markup=types.ReplyKeyboardRemove())
+    await send_message(chat_id=user_id, text=DAY_2_MSG_1, reply_markup=keyboard)
 
 
 async def get_user_attitude_name(message: types.Message):

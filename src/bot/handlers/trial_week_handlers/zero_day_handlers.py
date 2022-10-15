@@ -44,14 +44,8 @@ async def intro_message(message: Union[types.Message, str]):
             "Был оповещен сегодня": "Нет",
         }
         json.dump(user_data, open(preferences_path, 'w'), ensure_ascii=False, indent=3)
-    await send_message(user_id, DAY_0_INTRO_MSG)
-    await send_message(user_id, DAY_0_MSG_1, reply_markup=keyboard)
-    # if isinstance(message, types.Message):
-    #     await message.answer(text=DAY_0_INTRO_MSG)
-    #     await message.answer(text=DAY_0_MSG_1, reply_markup=keyboard)
-    # elif isinstance(message, str):
-    #     await bot.send_message(chat_id=user_id, text=DAY_0_INTRO_MSG)
-    #     await bot.send_message(chat_id=user_id, text=DAY_0_MSG_1, reply_markup=keyboard)
+    await send_message(chat_id=user_id, text=DAY_0_INTRO_MSG)
+    await send_message(chat_id=user_id, text=DAY_0_MSG_1, reply_markup=keyboard)
 
 
 async def start_get_user_goal(message: types.Message):

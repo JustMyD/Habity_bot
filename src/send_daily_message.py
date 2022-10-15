@@ -16,7 +16,7 @@ from bot.handlers.trial_week_handlers.fourth_day_handlers import fourth_day_intr
 from bot.handlers.trial_week_handlers.fifth_day_handlers import fifth_day_intro
 
 
-logs_path = os.path.normpath(os.path.join(os.path.dirname(__file__), 'logs/daily_sender_logger.log'))
+logs_path = os.path.normpath(os.path.join(os.path.dirname(__file__), 'daily_sender_logger.log'))
 
 logging.basicConfig(filename=logs_path, encoding='utf-8', format='%(asctime)s | %(levelname)s: %(message)s', level=logging.INFO)
 
@@ -39,7 +39,7 @@ def check_current_timeinterval() -> str:
     timeinterval = ''
     if 6 < int(current_day_time) < 8:
         timeinterval = 'Утром'
-    elif 12 < int(current_day_time) < 14:
+    elif 10 <= int(current_day_time) < 14:
         timeinterval = 'Днем'
     elif 18 < int(current_day_time) < 20:
         timeinterval = 'Вечером'
@@ -93,6 +93,7 @@ def send_messages(mailing_list: list):
 def main():
     timeinterval = check_current_timeinterval()
     mailing_list = get_users_for_mailing(timeinterval)
+    print(mailing_list)
     send_messages(mailing_list)
 
 
