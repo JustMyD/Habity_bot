@@ -1,5 +1,5 @@
 from bot.init_bot import bot, INIT_DAY_FUNCTIONS
-from bot.const.msgs import DAY_1_INTRO_MSG, DAY_1_MSG_1, USER_HABBIT_MSG_1, USER_HABBIT_MSG_2, USER_HABBIT_MSG_3, DAY_1_MSG_2
+from bot.const.msgs import DAY_1_INTRO_MSG, DAY_1_MSG_1, USER_HABIT_MSG_1, USER_HABIT_MSG_2, USER_HABIT_MSG_3, DAY_1_MSG_2
 from service.custom_methods import send_message
 
 import json
