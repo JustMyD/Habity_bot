@@ -1,6 +1,6 @@
-from ...init_bot import bot, INIT_DAY_FUNCTIONS
-from ...const.msgs import DAY_0_INTRO_MSG, DAY_0_MSG_1, DAY_0_MSG_2, USER_GOAL_MSG_1, USER_GOAL_MSG_2, USER_GOAL_MSG_3, DAY_0_MSG_3
-from src.service.custom_methods import send_message
+from bot.init_bot import bot, INIT_DAY_FUNCTIONS
+from bot.const.msgs import DAY_0_INTRO_MSG, DAY_0_MSG_1, DAY_0_MSG_2, USER_GOAL_MSG_1, USER_GOAL_MSG_2, USER_GOAL_MSG_3, DAY_0_MSG_3
+from service.custom_methods import send_message
 
 import json
 import os
