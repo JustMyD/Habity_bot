@@ -178,7 +178,7 @@ async def remove_user_characteristic(query: types.CallbackQuery):
                                 reply_markup=inline_message, parse_mode='HTML')
 
 
-async def back_to_habbits_list(query: types.CallbackQuery):
+async def back_to_characteristics_list(query: types.CallbackQuery):
     user_id = str(query.from_user.id)
     users_data = json.load(open(preferences_path, 'r'))
     user_chars = users_data[user_id]['Характеристики']
@@ -211,5 +211,5 @@ def register_my_characteristics_handlers(dp: Dispatcher):
                                                                                            action='make_main'))
     dp.register_callback_query_handler(remove_user_characteristic, char_number_data.filter(menu='characteristic',
                                                                                            action='remove'))
-    dp.register_callback_query_handler(back_to_habbits_list, char_number_data.filter(menu='characteristic',
+    dp.register_callback_query_handler(back_to_characteristics_list, char_number_data.filter(menu='characteristic',
                                                                                      action='back_to_chars'))
