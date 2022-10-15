@@ -55,7 +55,10 @@ def get_users_for_mailing(interval: str) -> list:
     users_data = json.load(open('config/user_preferences.json', 'r'))
     mailing_list = []
     for user, data in users_data.items():
-        send_time = data.get('Время отправки сообщений', 'Утром')
+        send_time = data.get('Время отправки сообщений')
+        if not send_time:
+            users_data[user]['Время отправки сообщений'] = 'Днем'
+            send_time = 'Днем'
         current_trial_day = int(data.get('Текущий пробный день'))
         already_notified = data.get('Был оповещен сегодня')
         if send_time == interval and current_trial_day < 6 and (already_notified == 'Нет' or current_trial_day == 0):
