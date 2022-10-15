@@ -1,5 +1,6 @@
 from ...init_bot import bot, INIT_DAY_FUNCTIONS
 from ...const.msgs import DAY_0_INTRO_MSG, DAY_0_MSG_1, DAY_0_MSG_2, USER_GOAL_MSG_1, USER_GOAL_MSG_2, USER_GOAL_MSG_3, DAY_0_MSG_3
+from src.service.custom_methods import send_message
 
 import json
 import os
@@ -25,7 +26,7 @@ async def intro_message(message: Union[types.Message, str]):
     keyboard.add(types.KeyboardButton(text='Определить цель'))
     user_data = json.load(open(preferences_path, 'r'))
     if isinstance(message, types.Message):
-        user_id = message.from_user.id
+        user_id = str(message.from_user.id)
     elif isinstance(message, str):
         user_id = message
     if user_id not in user_data.keys():
@@ -38,17 +39,19 @@ async def intro_message(message: Union[types.Message, str]):
             "Установки": [],
             "Напоминать об установках": "",
             "Характеристики": [],
-            "Время отправки сообщений": "",
+            "Время отправки сообщений": "Утром",
             "Текущий пробный день": "0",
             "Был оповещен сегодня": "Нет",
         }
         json.dump(user_data, open(preferences_path, 'w'), ensure_ascii=False, indent=3)
-    if isinstance(message, types.Message):
-        await message.answer(text=DAY_0_INTRO_MSG)
-        await message.answer(text=DAY_0_MSG_1, reply_markup=keyboard)
-    elif isinstance(message, str):
-        await bot.send_message(chat_id=user_id, text=DAY_0_INTRO_MSG)
-        await bot.send_message(chat_id=user_id, text=DAY_0_MSG_1, reply_markup=keyboard)
+    await send_message(user_id, DAY_0_INTRO_MSG)
+    await send_message(user_id, DAY_0_MSG_1, reply_markup=keyboard)
+    # if isinstance(message, types.Message):
+    #     await message.answer(text=DAY_0_INTRO_MSG)
+    #     await message.answer(text=DAY_0_MSG_1, reply_markup=keyboard)
+    # elif isinstance(message, str):
+    #     await bot.send_message(chat_id=user_id, text=DAY_0_INTRO_MSG)
+    #     await bot.send_message(chat_id=user_id, text=DAY_0_MSG_1, reply_markup=keyboard)
 
 
 async def start_get_user_goal(message: types.Message):

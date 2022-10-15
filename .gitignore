@@ -130,3 +130,6 @@ dmypy.json
 
 # User preferences
 src/config/user_preferences.json
+
+# Custom bash
+src/habity_bot_mailing.sh

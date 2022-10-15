@@ -2,16 +2,32 @@
 Вызываем с помощью CronTab для рассылки сообщений пользователям 3 раза в день
 """
 import json
-from datetime import datetime
+import asyncio
 import os
 import logging
+from datetime import datetime
 
-import asyncio
-from bot.init_bot import INIT_DAY_FUNCTIONS
-logging.basicConfig(filename='/home/www/Bot_projects/Habity_bot/src/logger.log',
-                    encoding='utf-8',
-                    format='%(threadName)s %(name)s %(levelname)s: %(message)s',
-                    level=logging.INFO)
+# from bot.init_bot import INIT_DAY_FUNCTIONS
+from bot.handlers.trial_week_handlers.zero_day_handlers import intro_message
+from bot.handlers.trial_week_handlers.first_day_handlers import first_day_intro
+from bot.handlers.trial_week_handlers.second_day_handlers import second_day_intro
+from bot.handlers.trial_week_handlers.third_day_handlers import third_day_intro
+from bot.handlers.trial_week_handlers.fourth_day_handlers import fourth_day_intro
+from bot.handlers.trial_week_handlers.fifth_day_handlers import fifth_day_intro
+
+
+logs_path = os.path.normpath(os.path.join(os.path.dirname(__file__), 'logs/daily_sender_logger.log'))
+
+logging.basicConfig(filename=logs_path, encoding='utf-8', format='%(asctime)s | %(levelname)s: %(message)s', level=logging.INFO)
+
+INIT_DAY_FUNCTIONS = {
+    '0': intro_message,
+    '1': first_day_intro,
+    '2': second_day_intro,
+    '3': third_day_intro,
+    '4': fourth_day_intro,
+    '5': fifth_day_intro
+}
 
 
 def check_current_timeinterval() -> str:
@@ -21,7 +37,7 @@ def check_current_timeinterval() -> str:
     """
     current_day_time = datetime.now().strftime('%H')
     timeinterval = ''
-    if 6 < int(current_day_time) < 9:
+    if 6 < int(current_day_time) < 8:
         timeinterval = 'Утром'
     elif 12 < int(current_day_time) < 14:
         timeinterval = 'Днем'
@@ -39,7 +55,10 @@ def get_users_for_mailing(interval: str) -> list:
     users_data = json.load(open('config/user_preferences.json', 'r'))
     mailing_list = []
     for user, data in users_data.items():
-        if data['Время отправки сообщений'] == interval and int(data['Текущий пробный день']) < 6 and data['Был оповещен сегодня'] == 'Нет' or int(data['Текущий пробный день']) == 0:
+        send_time = data.get('Время отправки сообщений', 'Утром')
+        current_trial_day = int(data.get('Текущий пробный день'))
+        already_notified = data.get('Был оповещен сегодня')
+        if send_time == interval and current_trial_day < 6 and (already_notified == 'Нет' or current_trial_day == 0):
             mailing_list.append((user, data['Текущий пробный день']))
     return mailing_list
 
@@ -51,13 +70,13 @@ def send_messages(mailing_list: list):
     """
     io_loop = asyncio.get_event_loop()
     bot_tasks = set()
+    logging.info(f'Task list: {mailing_list}')
     for user_data in mailing_list:
         user_id = user_data[0]
         current_day = user_data[1]
         task = io_loop.create_task(INIT_DAY_FUNCTIONS[current_day](user_id))
         bot_tasks.add(task)
         task.add_done_callback(bot_tasks.discard)
-    logging.info(f'Current tasks is: {bot_tasks}')
     try:
         logging.info('Start running tasks')
         io_loop.run_until_complete(asyncio.wait(bot_tasks))
