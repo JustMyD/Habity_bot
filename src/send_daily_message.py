@@ -68,6 +68,7 @@ def send_messages(mailing_list: list):
     Разослать сообщения пользователям в зависимости от текущего временного промежутка и дня
     :return:
     """
+    logging.info('In function send_messages')
     io_loop = asyncio.get_event_loop()
     bot_tasks = set()
     logging.info(f'Task list: {mailing_list}')
