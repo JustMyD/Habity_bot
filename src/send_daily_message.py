@@ -17,6 +17,7 @@ from bot.handlers.trial_week_handlers.fifth_day_handlers import fifth_day_intro
 
 
 logs_path = os.path.normpath(os.path.join(os.path.dirname(__file__), 'daily_sender_logger.log'))
+preferences_path = os.path.normpath(os.path.join(os.path.dirname(__file__), 'config/user_preferences.json'))
 
 logging.basicConfig(filename=logs_path, encoding='utf-8', format='%(asctime)s | %(levelname)s: %(message)s', level=logging.INFO)
 
@@ -52,7 +53,7 @@ def get_users_for_mailing(interval: str) -> list:
     Парсим конфиг для получения списка пользователей и текущего дня пользователя для рассылки сообщений
     :return:
     """
-    users_data = json.load(open('config/user_preferences.json', 'r'))
+    users_data = json.load(open(preferences_path, 'r'))
     mailing_list = []
     for user, data in users_data.items():
         send_time = data.get('Время отправки сообщений')
@@ -93,9 +94,9 @@ def send_messages(mailing_list: list):
 def main():
     timeinterval = check_current_timeinterval()
     mailing_list = get_users_for_mailing(timeinterval)
-    print(mailing_list)
     send_messages(mailing_list)
 
 
 if __name__ == '__main__':
     main()
+    print(logs_path)
